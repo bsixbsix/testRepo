@@ -19,7 +19,10 @@ public class UserActionTest {
 		User user2 = new User("X02","小红");
 		userAction2.setUser(user2);
 		userAction2.add();
-
+		
+		System.out.println("增加成功!");
+		System.out.println("再开增加成功");
+		
 	}
 
 }
