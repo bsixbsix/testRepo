@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/context
+    	   http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="userDao" class="org.bsix.example.spring3.dao.UserDao" scope="singleton" />
+	<bean id="logMsgDao" class="org.bsix.example.spring3.dao.LogMsgDao" scope="singleton" />
+	<bean id="otherDao" class="org.bsix.example.spring3.dao.OtherDao" scope="singleton" />
+	<bean id="userService" class="org.bsix.example.spring3.service.UserService" scope="singleton">
+		<property name="userDao" ref="userDao" />
+	</bean>
+
+	<bean id="logMsgService" class="org.bsix.example.spring3.service.LogMsgService"
+		scope="singleton">
+		<property name="logMsgDao" ref="logMsgDao" />
+	</bean>
+
+	<bean id="userAction" class="org.bsix.example.spring3.action.UserAction" scope="prototype">
+		<property name="userService" ref="userService" />
+		<property name="logMsgService" ref="logMsgService" />
+	</bean>
+
+	<bean id="logAspect" class="org.bsix.example.spring3.aspect.LogAspect" />
+
+	<aop:config>
+		<aop:aspect ref="logAspect">
+			<aop:pointcut id="logPointCut" expression="execution(* org.bsix.example.spring3.dao.*.*(..))" />
+			<aop:before method="logBefore" pointcut-ref="logPointCut" />
+		</aop:aspect>
+	</aop:config>
+
+	<bean id="jdbcDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<bean id="dbcpDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<context:property-placeholder location="jdbc.properties" />
+</beans>
